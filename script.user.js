@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Objectif Pass Anki To Connect
 // @namespace    http://tampermonkey.net/
-// @version      1.7
+// @version      1.8
 // @updateURL    https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/script.user.js
 // @downloadURL  https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/script.user.js
 // @description  Adding buttons on OP to redirect to Anki
@@ -139,9 +139,7 @@
            tags: "p_OP"+ " " + getAnnaleTag() + " " + "type_Erreur" + " " + "z_"+qcmNumber + " " + "UE"+ue+"_"
        };
        if(mobile) {
-
            const searchParams = new URLSearchParams(data);
-           // searchParams.toString() === 'var1=value1&var2=value2'
            window.open("https://ankiuser.net/add?"+searchParams.toString());
        } else {
            var actionToAdd = {
@@ -164,10 +162,6 @@
            invoke(dataToAdd);
        }
        return false;
-    }
-    function correct() {
-        //correctionSerie();
-        addButton();
     }
     function getAnnaleTag() {
         enonce = getEnonce();
@@ -226,8 +220,8 @@
             buttonToCatch.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
-                i = e.srcElement.id.replace('addToAnki_', '');
-                timeouts.push(setTimeout(function() {addToAnki(e,i)}, maxIntervalClick));
+                let id = e.srcElement.id.replace('addToAnki_', '');
+                timeouts.push(setTimeout(function() {addToAnki(e,id)}, maxIntervalClick));
             });
             i++;
         })
@@ -291,5 +285,5 @@
         xhr.send(JSON.stringify(data));
     });
     }
-	
+
 })();
