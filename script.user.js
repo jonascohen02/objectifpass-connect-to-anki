@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name         Objectif Pass Anki To Connect
 // @namespace    http://tampermonkey.net/
-// @version      1.6
+// @version      1.7
 // @updateURL    https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/script.user.js
+// @downloadURL  https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/script.user.js
 // @description  Adding buttons on OP to redirect to Anki
 // @author       Jonas Cohen
 // @match        https://www.objectifpass.fr/*
@@ -14,9 +15,8 @@
     'use strict';
 	if(window.location.pathname.includes('qcm/affiche')) {
     var toggle = 0;
-		console.log("hi1");
     var innerOriginal;
-    window.addEventListener("load", function() {console.log("22222");innerOriginal = structuredClone(document.querySelector('.QCM_block').innerHTML); toggleSerieCorrectionAlwreadyDone(true); $('.QCM_question').css('cursor','pointer').on('click',toggleSerieCorrectionAlwreadyDone);});
+    window.addEventListener("load", function() {innerOriginal = structuredClone(document.querySelector('.QCM_block').innerHTML); toggleSerieCorrectionAlwreadyDone(true); $('.QCM_question').css('cursor','pointer').on('click',toggleSerieCorrectionAlwreadyDone);});
     function toggleSerieCorrectionAlwreadyDone(firstTime) {
         var elementToOuter = document.querySelectorAll('.QCM_reponse');
         var button = '<a class="QCM_reponse switch icons"><span class="ss-on" style="display: none;"></span><span class="ss-slider" style="left: 0px;"></span></a>';
@@ -63,6 +63,12 @@
        var qcm = qcms[i];
        var recto = qcm.qst;
        var verso = qcm.answ;
+       var dataToAdd = {
+           "action": "multi",
+           "params": {
+               "actions": []
+           }
+       }
        if(e.altKey) {
            mobile = true;
        }
@@ -94,6 +100,38 @@
        } else if(e.shiftKey | e.nbClick == 2) {
            recto = enonce.replace(/\(Annales ([0-9]{4})\/([0-9]{4})\)/g, '') + " <br>" + recto;
        };
+       var enonceImg = document.querySelector('img.enonce');
+       var correctionImg = document.querySelector('img.correction');
+       var dataEnonceImg ="", dataCorrectionImg ="";
+
+       if(enonceImg) {
+           var enonceSrc = enonceImg.src;
+           var fileNameEnonce = enonceImg.src.replace('https://www.objectifpass.fr/qcm_images/','');
+           dataEnonceImg = {
+               "action": "storeMediaFile",
+               "params": {
+                   "filename": fileNameEnonce,
+                   "url": enonceSrc
+               }
+           }
+           dataToAdd.params.actions.push(dataEnonceImg);
+           dataEnonceImg = "<br><img  src=\""+fileNameEnonce+"\">";
+       }
+       if(correctionImg) {
+           var correctionSrc = correctionImg.src
+           var fileNameCorrection = correctionSrc.replace('https://www.objectifpass.fr/qcm_images/','');
+           dataCorrectionImg = {
+               "action": "storeMediaFile",
+               "params": {
+                   "filename": fileNameCorrection,
+                   "url": correctionSrc
+               }
+           }
+           dataToAdd.params.actions.push(dataCorrectionImg);
+           dataCorrectionImg = "<img  src=\""+fileNameCorrection+"\"><br>";
+       }
+       recto = recto + dataEnonceImg;
+       verso = dataCorrectionImg + verso;
        const data = {
            deck: "Pass::Erreurs OP::UE"+ue,
            recto: recto,
@@ -106,7 +144,7 @@
            // searchParams.toString() === 'var1=value1&var2=value2'
            window.open("https://ankiuser.net/add?"+searchParams.toString());
        } else {
-           var dataToAdd = {
+           var actionToAdd = {
                "action": "guiAddCards",
                "version": 6,
                "params": {
@@ -121,6 +159,7 @@
                    }
                }
            }
+           dataToAdd.params.actions.push(actionToAdd);
            console.log(dataToAdd);
            invoke(dataToAdd);
        }
@@ -174,10 +213,10 @@
             var isIncorrect = answer.classList.contains('erreur');
             qcms[i] = {qst: qst, answ: answ, isTrue: isTrue, isIncorrect: isIncorrect};
             if (mobile) {
-		    var buttonToCatch = document.createElement('span');
-	    } else {
-		    var buttonToCatch = document.createElement('button');
-	    }
+                var buttonToCatch = document.createElement('span');
+            } else {
+                var buttonToCatch = document.createElement('button');
+            }
             buttonToCatch.id = 'addToAnki_' + i;
             buttonToCatch.className = 'bouton_bleu';
             buttonToCatch.style = 'padding: 5px; font-size: 10px; display: inline-block;';
@@ -201,19 +240,22 @@
     $(document).on('ajaxPageLoad',function(event){$('.serie :submit').on('click', addButton);});
 
     function toogleCorrection(element = this, isAll = false, toggleTime = 150){
+        element = $('.QCM_block');
         if(sync1==sync2) {
-              var $explication = $(element).find('.QCM_ligne_explication');
-      var nb_max = $explication.length;// généralement 5, mais 6 pour Montpellier avec l'item F
-      for(var i=0;i<nb_max;i++){
-         if ($explication.eq(i).hasClass('juste') | isAll){
-         //if(true) {
-             $explication.eq(i).toggle(toggleTime);
-         }
-      }
-      /* re-calcul les formules de math qui étaient cachées  */
-      $explication.each(function(){
-			MathJax.Hub.Queue(["Rerender", MathJax.Hub, this]);
-		})
+            var $explication = $(element).find('.QCM_ligne_explication');
+            window.element = element;
+            console.log(window.element);
+            var nb_max = $explication.length;// généralement 5, mais 6 pour Montpellier avec l'item F
+            for(var i=0;i<nb_max;i++){
+                if ($explication.eq(i).hasClass('juste') | isAll){
+                    //if(true) {
+                    $explication.eq(i).toggle(toggleTime);
+                }
+            }
+            /* re-calcul les formules de math qui étaient cachées  */
+            $explication.each(function(){
+                MathJax.Hub.Queue(["Rerender", MathJax.Hub, this]);
+            })
         } else {sync2++;}
 
     }
