@@ -146,7 +146,11 @@
             var isTrue = answer.classList.contains('vrai');
             var isIncorrect = answer.classList.contains('erreur');
             qcms[i] = {qst: qst, answ: answ, isTrue: isTrue, isIncorrect: isIncorrect};
-            var buttonToCatch = document.createElement('button');
+            if (mobile) {
+		    var buttonToCatch = document.createElement('span');
+	    } else {
+		    var buttonToCatch = document.createElement('button');
+	    }
             buttonToCatch.id = 'addToAnki_' + i;
             buttonToCatch.className = 'bouton_bleu';
             buttonToCatch.style = 'padding: 5px; font-size: 10px';
