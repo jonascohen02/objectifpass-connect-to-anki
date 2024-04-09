@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Objectif Pass Anki To Connect
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @updateURL    https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/script.user.js
 // @description  Adding buttons on OP to redirect to Anki
 // @author       Jonas Cohen
@@ -12,6 +12,32 @@
 
 (function() {
     'use strict';
+	if(window.location.pathname.includes('qcm/affiche-')) {
+    var toggle = 0;
+    var innerOriginal;
+    window.onload = function() {innerOriginal = structuredClone(document.querySelector('.QCM_block').innerHTML); toggleSerieCorrectionAlwreadyDone(true); $('.QCM_question').css('cursor','pointer').on('click',toggleSerieCorrectionAlwreadyDone);};
+    function toggleSerieCorrectionAlwreadyDone(firstTime) {
+        var elementToOuter = document.querySelectorAll('.QCM_reponse');
+        var button = '<a class="QCM_reponse switch icons"><span class="ss-on" style="display: none;"></span><span class="ss-slider" style="left: 0px;"></span></a>';
+        if(firstTime) {
+            elementToOuter.forEach(function(e) {e.classList.add('answerItem')});
+            elementToOuter.forEach(function(e) {e.classList.toggle('notDisplay')});
+            elementToOuter.forEach(function(e) {e.insertAdjacentHTML('beforebegin', '<a class="QCM_reponse switch icons ss_alreadyOn"><span class="ss-on" style="display: none;"></span><span class="ss-slider" style="left: 0px;"></span></a>');});
+            toogleExplicationOnLoad()
+        }else {
+            toogleExplication()
+        };
+        if(!toggle) {
+
+        } else {
+            document.querySelector('.QCM_block').innerHTML = innerOriginal;
+            document.querySelectorAll('.QCM_ligne_explication .bouton_bleu').forEach(function(element) {element.remove();});
+            addButton();
+            $('.QCM_question').css('cursor','pointer').on('click',toggleSerieCorrectionAlwreadyDone)
+        }
+        toggle = toggle == 0 ? 1 : 0;
+    }
+}
     //console.log($._data($('.serie :submit')[0], 'events'))
     var styleTag = document.createElement("style");
     styleTag.innerHTML = ".centerClass { text-align: center; } .notDisplay{ display:none ! important;}";
@@ -221,32 +247,6 @@
         xhr.open('POST', 'http://127.0.0.1:8765');
         xhr.send(JSON.stringify(data));
     });
-
-if(window.location.pathname.includes('qcm/affiche-')) {
-    var toggle = 0;
-    var innerOriginal;
-    window.onload = function() {innerOriginal = structuredClone(document.querySelector('.QCM_block').innerHTML); toggleSerieCorrectionAlwreadyDone(true); $('.QCM_question').css('cursor','pointer').on('click',toggleSerieCorrectionAlwreadyDone);};
-    function toggleSerieCorrectionAlwreadyDone(firstTime) {
-        var elementToOuter = document.querySelectorAll('.QCM_reponse');
-        var button = '<a class="QCM_reponse switch icons"><span class="ss-on" style="display: none;"></span><span class="ss-slider" style="left: 0px;"></span></a>';
-        if(firstTime) {
-            elementToOuter.forEach(function(e) {e.classList.add('answerItem')});
-            elementToOuter.forEach(function(e) {e.classList.toggle('notDisplay')});
-            elementToOuter.forEach(function(e) {e.insertAdjacentHTML('beforebegin', '<a class="QCM_reponse switch icons ss_alreadyOn"><span class="ss-on" style="display: none;"></span><span class="ss-slider" style="left: 0px;"></span></a>');});
-            toogleExplicationOnLoad()
-        }else {
-            toogleExplication()
-        };
-        if(!toggle) {
-
-        } else {
-            document.querySelector('.QCM_block').innerHTML = innerOriginal;
-            document.querySelectorAll('.QCM_ligne_explication .bouton_bleu').forEach(function(element) {element.remove();});
-            addButton();
-            $('.QCM_question').css('cursor','pointer').on('click',toggleSerieCorrectionAlwreadyDone)
-        }
-        toggle = toggle == 0 ? 1 : 0;
     }
-}
-}
+	
 })();
