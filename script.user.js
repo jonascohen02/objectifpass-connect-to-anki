@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Objectif Pass Anki To Connect
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.6
 // @updateURL    https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/script.user.js
 // @description  Adding buttons on OP to redirect to Anki
 // @author       Jonas Cohen
@@ -12,10 +12,11 @@
 
 (function() {
     'use strict';
-	if(window.location.pathname.includes('qcm/affiche-')) {
+	if(window.location.pathname.includes('qcm/affiche')) {
     var toggle = 0;
+		console.log("hi1");
     var innerOriginal;
-    window.onload = function() {innerOriginal = structuredClone(document.querySelector('.QCM_block').innerHTML); toggleSerieCorrectionAlwreadyDone(true); $('.QCM_question').css('cursor','pointer').on('click',toggleSerieCorrectionAlwreadyDone);};
+    window.addEventListener("load", function() {console.log("22222");innerOriginal = structuredClone(document.querySelector('.QCM_block').innerHTML); toggleSerieCorrectionAlwreadyDone(true); $('.QCM_question').css('cursor','pointer').on('click',toggleSerieCorrectionAlwreadyDone);});
     function toggleSerieCorrectionAlwreadyDone(firstTime) {
         var elementToOuter = document.querySelectorAll('.QCM_reponse');
         var button = '<a class="QCM_reponse switch icons"><span class="ss-on" style="display: none;"></span><span class="ss-slider" style="left: 0px;"></span></a>';
@@ -179,7 +180,7 @@
 	    }
             buttonToCatch.id = 'addToAnki_' + i;
             buttonToCatch.className = 'bouton_bleu';
-            buttonToCatch.style = 'padding: 5px; font-size: 10px';
+            buttonToCatch.style = 'padding: 5px; font-size: 10px; display: inline-block;';
             buttonToCatch.innerText = 'Ajouter à Anki';
             answer.appendChild(buttonToCatch);
             answer.classList.add("centerClass");
