@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Objectif Pass Anki To Connect
 // @namespace    http://tampermonkey.net/
-// @version      2.3
+// @version      2.4
 // @updateURL    https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/script.user.js
 // @downloadURL  https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/script.user.js
 // @description  Adding buttons on OP to redirect to Anki and other cool tools
@@ -76,6 +76,7 @@
     //var correctionSerie = $._data($('.serie :submit')[0], 'events').click[0].handler;
 
     window.addToAnki = function(e, i) {
+        sync1++;
         //PERMET DE
         if (timeouts) {
             e.nbClick = timeouts.length;
