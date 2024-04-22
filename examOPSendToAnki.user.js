@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Exam OP Connect To Anki
 // @namespace    http://tampermonkey.net/
-// @version      2.0
-// @updateURL    https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/ExamOPSendToAnki.user.js
-// @downloadURL  https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/ExamOPSendToAnki.user.js
+// @version      2.1
+// @updateURL    https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/examOPSendToAnki.user.js
+// @downloadURL  https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/examOPSendToAnki.user.js
 // @description  Adding buttons on OP to redirect to Anki and other cool tools
 // @author       Jonas Cohen
 // @match        https://www.objectifpass.fr/entrainement/exam_corrige*
