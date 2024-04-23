@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          Main OP Connect To Anki
 // @namespace     http://tampermonkey.net/
-// @version       2.6
+// @version       2.7
 // @updateURL     https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/mainOPSendToAnki.user.js
 // @downloadURL   https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/mainOPSendToAnki.user.js
 // @description   Adding buttons on OP to redirect to Anki and other cool tools
@@ -96,7 +96,7 @@
             if (e.altKey) {
                 simulateMobile = true;
             }
-            if (e.ctrlKey | e.nbClick >= 3) {
+            if (e.ctrlKey || e.nbClick >= 3) {
                 recto = "<ul>";
                 verso = "<ul>";
                 for (var key in qcms) {
@@ -119,9 +119,9 @@
                 recto += "</ul>";
                 verso += "</ul>";
             }
-            if ((e.shiftKey && e.ctrlKey) | e.nbClick >= 3) {
+            if ((e.shiftKey && e.ctrlKey) || e.nbClick >= 3) {
                 recto = enonce.replace(/\(Annales ([0-9]{4})\/([0-9]{4})\)/g, '') + " " + recto;
-            } else if (e.shiftKey | e.nbClick == 2) {
+            } else if (e.shiftKey || e.nbClick == 2) {
                 recto = enonce.replace(/\(Annales ([0-9]{4})\/([0-9]{4})\)/g, '') + " <br>" + recto;
             };
             var dataEnonceImg = "",
@@ -166,9 +166,12 @@
                 verso: verso,
                 tags: "p_OP" + " " + getAnnaleTag() + " " + "type_Erreur" + " " + "z_" + qcmNumber + " " + "UE" + ue + "_"
             };
-            if (simulateMobile) {
-                const searchParams = new URLSearchParams(data);
+            const searchParams = new URLSearchParams(data);
+            if (e.nbClick >= 4) {
                 navigator.clipboard.writeText("https://ankiuser.net/add#?" + searchParams.toString());
+            }
+            //Si MOBILE OU SI TOUCHE ALT ON OUVRE DANS LE NAVIGATEUR SINON DANS L'APPLICATION !
+            if (simulateMobile) {
                 window.open("https://ankiuser.net/add#?" + searchParams.toString());
             } else {
                 var actionToAdd = {
@@ -307,7 +310,7 @@
                 console.log(window.element);
                 var nb_max = $explication.length; // généralement 5, mais 6 pour Montpellier avec l'item F
                 for (var i = 0; i < nb_max; i++) {
-                    if ($explication.eq(i).hasClass('juste') | isAll) {
+                    if ($explication.eq(i).hasClass('juste') || isAll) {
                         //if(true) {
                         $explication.eq(i).toggle(toggleTime);
                     }
