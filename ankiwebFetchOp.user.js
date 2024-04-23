@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AnkiWeb fetch OP
 // @namespace    http://tampermonkey.net/
-// @version      2.0
+// @version      2.1
 // @description  Simple adding deepLinking from OP using Userscript
 // @updateURL    https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/ankiwebFetchOp.user.js
 // @downloadURL  https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/ankiwebFetchOp.user.js
@@ -107,85 +107,85 @@
         document.body.appendChild(styleTag);
         // Crée un observer pour détecter les modifications dans le DOM et voir si le script est ajouté
         // Fonction à appeler lorsque la mutation est détectée
-        window.nodes = [];
-        function handleMutation(mutationsList, observer) {
-            mutationsList.forEach(mutation => {
-                // Vérifier si un nœud a été ajouté
-                if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach(node => {
-                        // Vérifier si le nœud ajouté est une balise script
-                        if (node.tagName && node.tagName.toLowerCase() === 'script') {
-                            // Vérifier si la fonction openLink est définie dans le script
-                            if (node.text.includes("openLink")) {
-                                if (!window.changesAlreadyDone) {
-                                    nodes.push(node);
-                                    console.log(node);
-                                    // Créer une nouvelle balise script
-                                    var newScript = document.createElement('script');
+        // window.nodes = [];
+        // function handleMutation(mutationsList, observer) {
+        //     mutationsList.forEach(mutation => {
+        //         // Vérifier si un nœud a été ajouté
+        //         if (mutation.type === 'childList') {
+        //             mutation.addedNodes.forEach(node => {
+        //                 // Vérifier si le nœud ajouté est une balise script
+        //                 if (node.tagName && node.tagName.toLowerCase() === 'script') {
+        //                     // Vérifier si la fonction openLink est définie dans le script
+        //                     if (node.text.includes("openLink")) {
+        //                         if (!window.changesAlreadyDone) {
+        //                             nodes.push(node);
+        //                             console.log(node);
+        //                             // Créer une nouvelle balise script
+        //                             var newScript = document.createElement('script');
 
-                                    // Définir le contenu du script
-                                    window.scriptContent = `
-                                    window.changesAlreadyDone = true;
-                                    function initButtons() {
-                                    if(!document.querySelector('.tags a.new-tag')){
-                                    var tagElement = document.querySelector('.tags');
-                                    var tags = tagElement.innerHTML.split(' ');
-                                    var html = '<a onclick="ct_dblclick('+"'*', 'Pass::Erreurs OP::UE12'"+')" class="new-tag">Pass::Erreurs OP::UE12</a>';
-                                    tags.forEach(function(tag) {
-                                    if(tag.startsWith("z_")) {
-                                    var newTag = '<a onclick="qcmTagHandler(event, ' + "'" + tag + "'" + ')" class="new-tag">' + tag + '</a>';
-                                    html += newTag;
-                                    } else {
-                                    var newTag = '<a onclick="ct_click(' + "'" + tag + "'" + ')" ondblclick="ct_dblclick(' + "'" + tag + "', 'Pass::Erreurs OP::UE12'"+ ')" class="new-tag">' + tag + '</a>';
-                                    html += newTag;
-                                    }
-                                    });
-                                    tagElement.innerHTML = html;
-                                    }}
+        //                             // Définir le contenu du script
+        //                             window.scriptContent = `
+        //                             window.changesAlreadyDone = true;
+        //                             function initButtons() {
+        //                             if(!document.querySelector('.tags a.new-tag')){
+        //                             var tagElement = document.querySelector('.tags');
+        //                             var tags = tagElement.innerHTML.split(' ');
+        //                             var html = '<a onclick="ct_dblclick('+"'*', 'Pass::Erreurs OP::UE12'"+')" class="new-tag">Pass::Erreurs OP::UE12</a>';
+        //                             tags.forEach(function(tag) {
+        //                             if(tag.startsWith("z_")) {
+        //                             var newTag = '<a onclick="qcmTagHandler(event, ' + "'" + tag + "'" + ')" class="new-tag">' + tag + '</a>';
+        //                             html += newTag;
+        //                             } else {
+        //                             var newTag = '<a onclick="ct_click(' + "'" + tag + "'" + ')" ondblclick="ct_dblclick(' + "'" + tag + "', 'Pass::Erreurs OP::UE12'"+ ')" class="new-tag">' + tag + '</a>';
+        //                             html += newTag;
+        //                             }
+        //                             });
+        //                             tagElement.innerHTML = html;
+        //                             }}
 
 
-                                    function qcmTagHandler(event, tag) {
-                                    if(event.ctrlKey) {
-                                    //pycmd("ct_click_" + tag)
-                                    ct_click(tag);
-                                    } else {
-                                    var url = 'https://www.objectifpass.fr/qcm/affiche-' + tag.slice(2);
-                                    openNewLink(url);
-                                    }
-                                    }
+        //                             function qcmTagHandler(event, tag) {
+        //                             if(event.ctrlKey) {
+        //                             //pycmd("ct_click_" + tag)
+        //                             ct_click(tag);
+        //                             } else {
+        //                             var url = 'https://www.objectifpass.fr/qcm/affiche-' + tag.slice(2);
+        //                             openNewLink(url);
+        //                             }
+        //                             }
 
-                                    function openNewLink(link) {
-                                    var aToDisplay = document.createElement("a");
-                                    aToDisplay.target = "_blank";
-                                    aToDisplay.href = link;
-                                    aToDisplay.click();
-                                    }
+        //                             function openNewLink(link) {
+        //                             var aToDisplay = document.createElement("a");
+        //                             aToDisplay.target = "_blank";
+        //                             aToDisplay.href = link;
+        //                             aToDisplay.click();
+        //                             }
 
-                                    `;
+        //                             `;
 
-                                    // Ajouter la nouvelle balise script au document
-                                    newScript.textContent = window.scriptContent;
-                                    document.getElementById("qa").prepend(newScript);
-                                    console.log("changed");
-                                    initButtons();
-                                } else {
-                                    initButtons();
-                                }
-                            }
-                        }
-                    });
-                }
-            });
-        }
+        //                             // Ajouter la nouvelle balise script au document
+        //                             newScript.textContent = window.scriptContent;
+        //                             document.getElementById("qa").prepend(newScript);
+        //                             console.log("changed");
+        //                             initButtons();
+        //                         } else {
+        //                             initButtons();
+        //                         }
+        //                     }
+        //                 }
+        //             });
+        //         }
+        //     });
+        // }
 
-        // Configurer le MutationObserver
-        var observer = new MutationObserver(handleMutation);
+        // // Configurer le MutationObserver
+        // var observer = new MutationObserver(handleMutation);
 
         // Commencer à observer les mutations dans le nœud du document
-        observer.observe(document, {
-            childList: true, subtree: true
-        });
+        // observer.observe(document, {
+        //     childList: true, subtree: true
+        // });
 
     }
 })();
-const tagEl = "";
+//const tagEl = "";
