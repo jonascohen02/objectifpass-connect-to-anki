@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name          Main OP Connect To Anki
 // @namespace     http://tampermonkey.net/
-// @version       2.7
+// @version       2.8
 // @updateURL     https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/mainOPSendToAnki.user.js
 // @downloadURL   https://github.com/jonascohen02/objectifpass-connect-to-anki/raw/main/mainOPSendToAnki.user.js
 // @description   Adding buttons on OP to redirect to Anki and other cool tools
 // @author        Jonas Cohen
 // @match         https://www.objectifpass.fr/*
 // @exclude-match https://www.objectifpass.fr/entrainement/exam_corrige*
-// @run-at        document-start
 // @icon          https://www.google.com/s2/favicons?sz=64&domain=objectifpass.fr
 // @grant         none
 // ==/UserScript==
